@@ -7,6 +7,26 @@
   "author": "Egor Romanov <unsaidxpl@gmail.com>",
   "license": "Unlicense",
   "private": false,
+  "scripts": {
+    "build": "./node_modules/.bin/webpack",
+    "start": "webpack-dev-server",
+    "lint": "eslint src"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,md}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "dependencies": {
     "lodash": "^4.17.15",
     "three": "^0.118.3"
@@ -20,6 +40,7 @@
     "eslint": "^7.4.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
+    "file-loader": "^6.0.0",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "mini-css-extract-plugin": "^0.9.0",
