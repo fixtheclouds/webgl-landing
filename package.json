@@ -1,0 +1,13 @@
+{
+  "name": "webgl-landing",
+  "version": "1.0.0",
+  "description": "A training project to test WebGL rendering",
+  "main": "index.js",
+  "repository": "git@github.com:fixtheclouds/webgl-landing.git",
+  "author": "Egor Romanov <unsaidxpl@gmail.com>",
+  "license": "Unlicense",
+  "private": false,
+  "dependencies": {
+    "three": "^0.118.3"
+  }
+}
