@@ -21,6 +21,6 @@ function animate() {
 
 function bindScroll() {
   document.addEventListener('wheel', event => {
-    scene.scroll(event);
+    scene.debouncedScroll(event);
   });
 }

@@ -1,8 +1,18 @@
 import * as THREE from 'three';
 
+const rotationStep = 0.05;
+const maxRotationStep = 1.5;
+
 export default class Scene {
   constructor() {
-    this.counter = 0;
+    this.rotationSpeed = 0;
+    this.rotationAngle = 0;
+    this.lastDirection = 'x';
+    this.direction = Object.assign(this.lastDirection);
+    this.debouncedScroll = _.debounce(this._scroll, 50, {
+      leading: true,
+      trailing: false
+    });
   }
 
   init() {
@@ -46,33 +56,47 @@ export default class Scene {
   }
 
   render() {
+    this._scrollNext();
     this.renderer.render(this.scene, this.camera);
   }
 
+  _scrollNext() {
+    if (!this.rotationSpeed) {
+      return;
+    }
+    this.rotationAngle = Number(
+      (this.rotationAngle + this.rotationSpeed).toFixed(2)
+    );
+
+    if (this._scrollStop()) {
+      this.rotationAngle = 0;
+      this.rotationSpeed = 0;
+    }
+
+    this.mesh.rotation[this.direction] = this.rotationAngle;
+    this.line.rotation[this.direction] = this.rotationAngle;
+  }
+
+  _scrollStop() {
+    if (this.rotationSpeed > 0) {
+      return this.rotationAngle > maxRotationStep;
+    }
+
+    return this.rotationAngle < -maxRotationStep;
+  }
+
+  _scroll(event) {
+    this.rotationAngle = 0;
+    this.rotationSpeed = event.deltaY > 0 ? rotationStep : -rotationStep;
+    this._switchDirection();
+  }
+
+  _switchDirection() {
+    this.lastDirection = Object.assign(this.direction);
+    this.direction = this.direction === 'x' ? 'y' : 'x';
+  }
+
   scroll(event) {
-    let key = 'x';
-    if (this.counter >= 2) {
-      this.counter = 0;
-    } else if (this.counter >= 1) {
-      key = 'y';
-    }
-
-    if (event.deltaY > 0) {
-      this.mesh.rotation[key] = Number(
-        (this.mesh.rotation[key] + 0.05).toFixed(2)
-      );
-      this.line.rotation[key] = Number(
-        (this.line.rotation[key] + 0.05).toFixed(2)
-      );
-    } else {
-      this.mesh.rotation[key] = Number(
-        (this.mesh.rotation[key] - 0.05).toFixed(2)
-      );
-      this.line.rotation[key] = Number(
-        (this.line.rotation[key] - 0.05).toFixed(2)
-      );
-    }
-
-    this.counter = Number((this.counter + 0.05).toFixed(2));
+    this.debouncedScroll(event);
   }
 }
